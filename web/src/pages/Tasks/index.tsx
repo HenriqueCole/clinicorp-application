@@ -204,6 +204,8 @@ async function getData(): Promise<Task[]> {
 
 export function Tasks() {
   const [data, setData] = useState<Task[]>([])
+  const [userName, setUserName] = useState<string>("")
+  const [userImg, setUserImg] = useState<string>("")
 
   useEffect(() => {
     async function fetchData() {
@@ -212,7 +214,19 @@ export function Tasks() {
     }
     fetchData()
   }, [])
+
+  useEffect(() => {
+    const user = localStorage.getItem("user")
+    if (!user) {
+      window.location.href = "/"
+    }
+    const parsedUser = JSON.parse(user)
+    console.log(parsedUser)
+    setUserName(parsedUser.displayName)
+    setUserImg(parsedUser.photoURL)
+  }, [])
   
+
   const users = [
     {
       id: "1",
@@ -261,12 +275,14 @@ export function Tasks() {
                 <Tooltip>
                   <TooltipTrigger>
                     <Avatar className="border-2 border-orange-500 w-12 h-12">
-                      <AvatarImage src="https://github.com/HenriqueCole.png" />
-                      <AvatarFallback>HC</AvatarFallback>
+                      <AvatarImage src={userImg} />
+                      <AvatarFallback>
+                        {userName[0]}
+                      </AvatarFallback>
                     </Avatar>
                   </TooltipTrigger>
                   <TooltipContent>
-                    Henrique Cole
+                    {userName}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -275,7 +291,7 @@ export function Tasks() {
       </div>
       <div className="flex flex-col flex-1 p-6 space-y-11">
         <div className="flex flex-col leading-relaxed">
-          <h1 className="text-xl font-bold md:text-2xl">👋 Bem vindo, Henrique Cole!</h1>
+          <h1 className="text-xl font-bold md:text-2xl">👋 Bem vindo, {userName}!</h1>
           <span className="text-muted-foreground text-base">Aqui está a lista de tarefas</span>
         </div>
         <div className="flex flex-col flex-1 space-y-4">
@@ -318,7 +334,7 @@ export function Tasks() {
                           <SelectGroup>
                             <SelectLabel>Usuários</SelectLabel>
                             {users.map((user) => (
-                              <SelectItem value={user.id}>
+                              <SelectItem key={user.id} value={user.id}>
                                 <div className="flex items-center space-x-2">
                                   <Avatar className="border-2 border-orange-500 w-8 h-8">
                                     <AvatarImage src={user.avatar} />
@@ -344,7 +360,7 @@ export function Tasks() {
                             <SelectGroup>
                               <SelectLabel>Prioridades</SelectLabel>
                               {priorities.map((priority) => (
-                                <SelectItem value={priority.id}>
+                                <SelectItem key={priority.id} value={priority.id}>
                                   <div className="flex items-center space-x-2">
                                     {priority.icon}
                                     <span>{priority.name}</span>
