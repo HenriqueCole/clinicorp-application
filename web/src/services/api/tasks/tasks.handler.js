@@ -25,10 +25,26 @@ async function deleteTask(id){
   return task;
 }
 
+async function blockTask(id){
+  const task = await getById('tasks', id);
+  task.isBlocked = true;
+  const savedTask = await post('tasks', id, task)
+  return savedTask;
+}
+
+async function unblockTask(id){
+  const task = await getById('tasks', id);
+  task.isBlocked = false;
+  const savedTask = await post('tasks', id, task)
+  return savedTask;
+}
+
 module.exports = {
   getTasks,
   createTask,
   getTaskById,
   updateTask,
-  deleteTask
+  deleteTask,
+  blockTask,
+  unblockTask,
 };

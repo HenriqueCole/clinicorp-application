@@ -44,6 +44,26 @@ router.put("/tasks/:id", async (req, res) => {
   });
 });
 
+router.put("/tasks/block/:id", async (req, res) => {
+  tasksHandler.blockTask(req.params.id)
+  .then((result) => {
+    res.status(200).json(result);
+  })
+  .catch((error) => {
+    res.status(500).json(error);
+  });
+});
+
+router.put("/tasks/unblock/:id", async (req, res) => {
+  tasksHandler.unblockTask(req.params.id)
+  .then((result) => {
+    res.status(200).json(result);
+  })
+  .catch((error) => {
+    res.status(500).json(error);
+  });
+});
+
 
 router.delete("/tasks/:id", async (req, res) => {
   tasksHandler.deleteTask(req.params.id)

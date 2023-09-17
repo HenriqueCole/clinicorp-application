@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,19 +7,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Delete, Edit, LockIcon, MoreHorizontal } from "lucide-react"
+} from "@/components/ui/dropdown-menu";
+import { ColumnDef } from "@tanstack/react-table";
+import {
+  ArrowUpDown,
+  Copy,
+  Delete,
+  Edit,
+  LockIcon,
+  MoreHorizontal,
+  UnlockIcon,
+} from "lucide-react";
+import { useState } from "react";
+
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
 
 export type Task = {
-  id: string
-  description: string
-  status: "To do" | "Doing" | "Done"
-  priority: "Baixa" | "Média" | "Alta"
-  responsible: string
-  createdBy: string
-}
- 
+  id: string;
+  description: string;
+  status: "To do" | "Doing" | "Done";
+  priority: "Baixa" | "Média" | "Alta";
+  responsible: string;
+  createdBy: string;
+  isBlocked: boolean;
+};
+
 export const columns: ColumnDef<Task>[] = [
   {
     id: "select",
@@ -51,7 +64,7 @@ export const columns: ColumnDef<Task>[] = [
           ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -77,7 +90,7 @@ export const columns: ColumnDef<Task>[] = [
           Responsável
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -91,14 +104,19 @@ export const columns: ColumnDef<Task>[] = [
           Criado por
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
     id: "actions",
     header: "Ações",
     cell: ({ row }) => {
-      const task = row.original
+      const task = row.original;
+      const [blockText, setBlockText] = useState(
+        task.isBlocked ? "Desbloquear tarefa" : "Bloquear tarefa"
+      );
+      const { toast } = useToast();
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -120,17 +138,75 @@ export const columns: ColumnDef<Task>[] = [
               <Edit size={17} className="mr-2" />
               Editar tarefa
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LockIcon size={17} className="mr-2" />
-              Bloquear tarefa
+            <DropdownMenuItem
+              onClick={() => {
+                //fetch to get the task
+                fetch(`http://localhost:3001/api/tasks/${task.id}`, {
+                  //get the isBlocked value and if it is true, make a fetch to unblock the task and if it is false, make a fetch to block the task
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log("DATA: ", data.isBlocked);
+                    if (data.isBlocked) {
+                      fetch(
+                        `http://localhost:3001/api/tasks/unblock/${task.id}`,
+                        {
+                          method: "PUT",
+                        }
+                      )
+                        .then((response) => response.json())
+                        .then((data) => {
+                          console.log("DATA: ", data);
+                          setBlockText("Bloquear tarefa");
+                          toast({
+                            title: "Tarefa desbloqueada com sucesso!",
+                            description: "Agora outros usuários podem editá-la.",
+                            duration: 5000,
+                          });
+                          
+                        })
+                        .catch((error) => {
+                          console.error("Error: ", error);
+                        });
+                    } else {
+                      fetch(
+                        `http://localhost:3001/api/tasks/block/${task.id}`,
+                        {
+                          method: "PUT",
+                        }
+                      )
+                        .then((response) => response.json())
+                        .then((data) => {
+                          console.log("DATA: ", data);
+                          setBlockText("Desbloquear tarefa");
+                          toast({
+                            title: "Tarefa bloqueada com sucesso!",
+                            description: "Nenhum usuário poderá editá-la.",
+                            duration: 5000,
+                          });
+                        })
+                        .catch((error) => {
+                          console.error("Error: ", error);
+                        });
+                    }
+                  });
+              }}
+            >
+              {blockText === "Bloquear tarefa" ? (
+                <LockIcon size={17} className="mr-2" />
+              ) : (
+                <UnlockIcon size={17} className="mr-2" />
+              )}
+              {blockText}
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Delete size={17} className="mr-2" />
               Excluir tarefa
             </DropdownMenuItem>
           </DropdownMenuContent>
+          <Toaster />
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
