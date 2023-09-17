@@ -32,14 +32,44 @@ export function Login() {
     const provider = new GoogleAuthProvider();
 
     signInWithPopup(auth, provider)
-    .then((result) => {
-      setUser(result.user);
-      localStorage.setItem("user", JSON.stringify(result.user));
-      window.location.href = "/tasks";
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((result) => {
+        setUser(result.user);
+
+        fetch("http://localhost:3001/api/users")
+          .then((response) => response.json())
+          .then((data) => {
+            const userExists = data.some((user) => user.name === result.user.displayName);
+            if (!userExists) {
+              fetch("http://localhost:3001/api/users", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  name: result.user.displayName,
+                  photoURL: result.user.photoURL
+                })
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("Success:", data);
+                  window.location.href = "/tasks";
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
+            } else {
+              console.log("User already exists:", result.user.displayName);
+              window.location.href = "/tasks";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return (

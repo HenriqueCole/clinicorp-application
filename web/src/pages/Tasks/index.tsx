@@ -1,3 +1,6 @@
+import { initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import { useEffect, useState } from "react";
 
 import clinicorpLogo from "@/assets/clinicorpLogo.png";
@@ -37,208 +40,64 @@ import { useToast } from "@/components/ui/use-toast";
 import { ArrowDown, ArrowLeft, ArrowUp } from "lucide-react";
 
 async function getData(): Promise<Task[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "1",
-      description: "Create login page",
-      status: "To do",
-      priority: "Baixa",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "2",
-      description: "Implement authentication",
-      status: "Doing",
-      priority: "Alta",
-      responsible: "Henrique Cole",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "3",
-      description: "Add user profile page",
-      status: "To do",
-      priority: "Média",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "4",
-      description: "Create dashboard layout",
-      status: "Done",
-      priority: "Baixa",
-      responsible: "Luana Becker",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "5",
-      description: "Implement data fetching",
-      status: "To do",
-      priority: "Alta",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "6",
-      description: "Add data filtering",
-      status: "Doing",
-      priority: "Média",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "7",
-      description: "Create data visualization",
-      status: "To do",
-      priority: "Baixa",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "8",
-      description: "Implement data export",
-      status: "Done",
-      priority: "Alta",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "9",
-      description: "Add user settings page",
-      status: "To do",
-      priority: "Média",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "10",
-      description: "Create user management system",
-      status: "Doing",
-      priority: "Baixa",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "11",
-      description: "Implement user roles",
-      status: "To do",
-      priority: "Alta",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "12",
-      description: "Add user permissions",
-      status: "Done",
-      priority: "Média",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "13",
-      description: "Create notification system",
-      status: "To do",
-      priority: "Baixa",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "14",
-      description: "Implement email notifications",
-      status: "Doing",
-      priority: "Alta",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "15",
-      description: "Add in-app notifications",
-      status: "To do",
-      priority: "Média",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "16",
-      description: "Create error handling system",
-      status: "Done",
-      priority: "Baixa",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "17",
-      description: "Implement error logging",
-      status: "To do",
-      priority: "Alta",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "18",
-      description: "Add error notifications",
-      status: "Doing",
-      priority: "Média",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-    {
-      id: "19",
-      description: "Create testing suite",
-      status: "To do",
-      priority: "Baixa",
-      responsible: "Henrique Cole",
-      createdBy: "Luana Becker",
-    },
-    {
-      id: "20",
-      description: "Implement unit tests",
-      status: "Done",
-      priority: "Alta",
-      responsible: "Luana Becker",
-      createdBy: "Henrique Cole",
-    },
-  ]
+  const response = await fetch("http://localhost:3001/api/tasks")
+  const data = await response.json()
+  return data
 }
+
+async function getUsers(): Promise<any[]> {
+  const response = await fetch("http://localhost:3001/api/users")
+  const data = await response.json()
+  return data
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
+  authDomain: "clini-do.firebaseapp.com",
+  projectId: "clini-do",
+  storageBucket: "clini-do.appspot.com",
+  messagingSenderId: "512229656593",
+  appId: "1:512229656593:web:b322c538c1f395c4f609b0",
+  measurementId: "G-9S3C1TZ415"
+};
+
+
 
 export function Tasks() {
   const [data, setData] = useState<Task[]>([])
+  const [users, setUsers] = useState<any[]>([])
   const [userName, setUserName] = useState<string>("")
   const [userImg, setUserImg] = useState<string>("")
 
-  useEffect(() => {
-    async function fetchData() {
-      const result = await getData()
-      setData(result)
-    }
-    fetchData()
-  }, [])
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const fetchData = async () => {
+    const result = await getData();
+    const users = await getUsers();
+    setData(result);
+    setUsers(users);
+    console.log("USERS: ", users)
+  };
 
   useEffect(() => {
-    const user = localStorage.getItem("user")
-    if (!user) {
-      window.location.href = "/"
+    async function fetchInitialData() {
+      await fetchData();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setUserName(user.displayName);
+          setUserImg(user.photoURL);
+        }
+      });
     }
-    const parsedUser = JSON.parse(user)
-    console.log(parsedUser)
-    setUserName(parsedUser.displayName)
-    setUserImg(parsedUser.photoURL)
-  }, [])
-  
+    fetchInitialData();
+  }, []);
 
-  const users = [
-    {
-      id: "1",
-      name: "Henrique Cole",
-      avatar: "https://github.com/HenriqueCole.png"
-    },
-    {
-      id: "2",
-      name: "Luana Becker",
-      avatar: "https://github.com/LuanaBecker24.png"
-    }
-  ]
+  // Fetch data every 5 seconds
+  useEffect(() => {
+    const intervalId = setInterval(fetchData, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const priorities = [
     {
@@ -337,8 +196,10 @@ export function Tasks() {
                               <SelectItem key={user.id} value={user.id}>
                                 <div className="flex items-center space-x-2">
                                   <Avatar className="border-2 border-orange-500 w-8 h-8">
-                                    <AvatarImage src={user.avatar} />
-                                    <AvatarFallback>{user.name[0]}</AvatarFallback>
+                                    <AvatarImage src={user.photoURL} />
+                                    <AvatarFallback>
+                                      teste
+                                    </AvatarFallback>
                                   </Avatar>
                                   <span>{user.name}</span>
                                 </div>

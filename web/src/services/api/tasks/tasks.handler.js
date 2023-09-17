@@ -1,8 +1,8 @@
 const { get, post, getById, remove } = require('../../crud/firebase');
 
-async function getTasks(res) {
+async function getTasks() {
   const tasks = await get('tasks');
-  res.send(tasks);
+  return tasks;
 }
 
 async function createTask(tasks){
