@@ -1,4 +1,4 @@
-import crud from "./crud/firebase";
+const { post } = require("./crud/firebase");
 
 // async function getTasks(res: any) {
 //   const tasks = await crud.get("tasks");
@@ -12,9 +12,10 @@ async function createTask() {
     responsible: "test",
     createdBy: "test",
     isBlocked: false,
+    priority: "Baixa",
   };
 
-  const savedTask = await crud.post("tasks", null, task);
+  const savedTask = await post("tasks", null, task);
   return savedTask;
   }
 
