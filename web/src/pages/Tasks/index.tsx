@@ -40,7 +40,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Form } from "@/components/ui/form";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowDown, ArrowLeft, ArrowUp } from "lucide-react";
@@ -75,6 +74,7 @@ export function Tasks() {
   const [newTask, setNewTask] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("");
   const [selectedResponsible, setSelectedResponsible] = useState<string>("");
+  const [cancelClicked, setCancelClicked] = useState(false);
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -87,13 +87,21 @@ export function Tasks() {
     console.log("USERS: ", users);
   };
 
+  const handleCancelClick = () => {
+    setCancelClicked(true);
+  };
+  
+
   useEffect(() => {
     async function fetchInitialData() {
       await fetchData();
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          setUserName(user.displayName);
-          setUserImg(user.photoURL);
+          setUserName(user.displayName || "");
+          setUserImg(user.photoURL || "");
+        } else {
+          setUserName("");
+          setUserImg("");
         }
       });
     }
@@ -122,6 +130,12 @@ export function Tasks() {
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+  
+    if (cancelClicked) {
+      setCancelClicked(false);
+      return;
+    }
+  
     const task = {
       createdBy: userName,
       description: newTask,
@@ -130,7 +144,7 @@ export function Tasks() {
       responsible: selectedResponsible,
       status: "To Do",
     };
-
+  
     const response = await fetch("http://localhost:3001/api/tasks", {
       method: "POST",
       headers: {
@@ -194,7 +208,7 @@ export function Tasks() {
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
-                <Form>
+                
                   <form onSubmit={handleNewTaskSubmit}>
                     <AlertDialogHeader className="flex flex-col space-y-5">
                       <div className="space-y-2">
@@ -274,7 +288,7 @@ export function Tasks() {
                       </div>
                       <div className="flex flex-1 justify-center space-x-4">
                         <AlertDialogCancel>
-                          <Button variant="ghost">Cancelar</Button>
+                          <Button variant="ghost" onClick={handleCancelClick}>Cancelar</Button>
                         </AlertDialogCancel>
                         <AlertDialogAction
                           type="submit"
@@ -292,7 +306,6 @@ export function Tasks() {
                       </div>
                     </div>
                   </form>
-                </Form>
               </AlertDialogContent>
             </AlertDialog>
             <DataTable columns={columns} data={data} />
