@@ -5,12 +5,28 @@ import { useState } from "react";
 import clinicorpLogo from "@/assets/clinicorpLogo.png";
 import googleLogo from "@/assets/googleLogo.png";
 
-import { auth } from "@/services/firebase";
-import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
+// const { auth } = require('../../services/crud/firebase');
+
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 export function Login() {
-  const [user, setUser] = useState<User>({} as User);
+  const [user, setUser] = useState({});
   
+  const firebaseConfig = {
+    apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
+    authDomain: "clini-do.firebaseapp.com",
+    projectId: "clini-do",
+    storageBucket: "clini-do.appspot.com",
+    messagingSenderId: "512229656593",
+    appId: "1:512229656593:web:b322c538c1f395c4f609b0",
+    measurementId: "G-9S3C1TZ415"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
   function handleGoogleSignIn() {
     const provider = new GoogleAuthProvider();
