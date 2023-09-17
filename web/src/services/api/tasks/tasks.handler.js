@@ -25,6 +25,13 @@ async function deleteTask(id){
   return task;
 }
 
+async function deleteAllTasks(){
+  const tasks = await get('tasks');
+  tasks.forEach(async (task) => {
+    await remove('tasks', task.id);
+  });
+}
+
 async function blockTask(id){
   const task = await getById('tasks', id);
   task.isBlocked = true;
@@ -47,4 +54,5 @@ module.exports = {
   deleteTask,
   blockTask,
   unblockTask,
+  deleteAllTasks,
 };

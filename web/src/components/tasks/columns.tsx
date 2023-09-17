@@ -10,18 +10,43 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowUp,
   ArrowUpDown,
   Copy,
   Delete,
   Edit,
   LockIcon,
   MoreHorizontal,
+  PlusCircle,
   UnlockIcon,
 } from "lucide-react";
 import { useState } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 export type Task = {
   id: string;
@@ -32,6 +57,12 @@ export type Task = {
   createdBy: string;
   isBlocked: boolean;
 };
+
+async function getUsers(): Promise<any[]> {
+  const response = await fetch("http://localhost:3001/api/users");
+  const data = await response.json();
+  return data;
+}
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -112,10 +143,36 @@ export const columns: ColumnDef<Task>[] = [
     header: "Ações",
     cell: ({ row }) => {
       const task = row.original;
+
+      const [users, setUsers] = useState<any[]>([]);
       const [blockText, setBlockText] = useState(
         task.isBlocked ? "Desbloquear tarefa" : "Bloquear tarefa"
       );
       const { toast } = useToast();
+      const priorities = [
+        {
+          id: "1",
+          name: "Baixa",
+          icon: <ArrowDown size={17} />,
+        },
+        {
+          id: "2",
+          name: "Média",
+          icon: <ArrowLeft size={17} />,
+        },
+        {
+          id: "3",
+          name: "Alta",
+          icon: <ArrowUp size={17} />,
+        },
+      ];
+
+      const fetchData = async () => {
+        const users = await getUsers();
+        setUsers(users);
+      };
+
+      fetchData();
 
       return (
         <DropdownMenu>
@@ -134,16 +191,107 @@ export const columns: ColumnDef<Task>[] = [
               Copiar ID da tarefa
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Edit size={17} className="mr-2" />
-              Editar tarefa
-            </DropdownMenuItem>
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <div className="flex items-center justify-center flex-1 px-2 hover:bg-zinc-100 rounded">
+                  <Edit size={17} className="mr-2" />
+                  <p className="text-sm">Editar tarefa</p>
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <form>
+                  <AlertDialogHeader className="flex flex-col space-y-5">
+                    <div className="space-y-2">
+                      <AlertDialogTitle>Editar tarefa</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Lembre-se de preencher todos os campos
+                      </AlertDialogDescription>
+                    </div>
+                  </AlertDialogHeader>
+                  <div className="flex flex-col space-y-5">
+                    <div className="space-y-2">
+                      <span>Descrição</span>
+                      <Textarea
+                        className="leading-relaxed resize-none"
+                        placeholder="Descreva o objetivo da tarefa..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <span>Responsável</span>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um usuário..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Usuários</SelectLabel>
+                            {users.map((user) => (
+                              <SelectItem key={user.id} value={user.name}>
+                                <div className="flex items-center space-x-2">
+                                  <Avatar className="border-2 border-orange-500 w-8 h-8">
+                                    <AvatarImage src={user.photoURL} />
+                                    <AvatarFallback>
+                                      {user.name[0]}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <span>{user.name}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <span>Prioridade</span>
+                      <Select>
+                        <SelectTrigger className="p-5">
+                          <SelectValue placeholder="Selecione a prioridade..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Prioridades</SelectLabel>
+                            {priorities.map((priority) => (
+                              <SelectItem
+                                key={priority.id}
+                                value={priority.name}
+                              >
+                                <div className="flex items-center space-x-2">
+                                  {priority.icon}
+                                  <span>{priority.name}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-1 justify-center space-x-4">
+                      <AlertDialogCancel>
+                        <Button variant="ghost">Cancelar</Button>
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        type="submit"
+                        onClick={() => {
+                          toast({
+                            title: "Tarefa criada com sucesso!",
+                            description: "A tarefa foi adicionada ao board.",
+                            duration: 5000,
+                          });
+                        }}
+                      >
+                        <PlusCircle size={20} className="mr-2" />
+                        Criar tarefa
+                      </AlertDialogAction>
+                    </div>
+                  </div>
+                </form>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <DropdownMenuItem
               onClick={() => {
-                //fetch to get the task
-                fetch(`http://localhost:3001/api/tasks/${task.id}`, {
-                  //get the isBlocked value and if it is true, make a fetch to unblock the task and if it is false, make a fetch to block the task
-                })
+                fetch(`http://localhost:3001/api/tasks/${task.id}`, {})
                   .then((response) => response.json())
                   .then((data) => {
                     console.log("DATA: ", data.isBlocked);
@@ -160,10 +308,10 @@ export const columns: ColumnDef<Task>[] = [
                           setBlockText("Bloquear tarefa");
                           toast({
                             title: "Tarefa desbloqueada com sucesso!",
-                            description: "Agora outros usuários podem editá-la.",
+                            description:
+                              "Agora outros usuários podem editá-la.",
                             duration: 5000,
                           });
-                          
                         })
                         .catch((error) => {
                           console.error("Error: ", error);
@@ -199,7 +347,25 @@ export const columns: ColumnDef<Task>[] = [
               )}
               {blockText}
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                fetch(`http://localhost:3001/api/tasks/${task.id}`, {
+                  method: "DELETE",
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("DATA: ", data);
+                  toast({
+                    title: "Tarefa excluída com sucesso!",
+                    description: "A tarefa foi excluída do board.",
+                    duration: 5000,
+                  });
+                })
+                .catch((error) => {
+                  console.error("Error: ", error);
+                });
+              }}
+            >
               <Delete size={17} className="mr-2" />
               Excluir tarefa
             </DropdownMenuItem>

@@ -75,4 +75,14 @@ router.delete("/tasks/:id", async (req, res) => {
   });
 });
 
+router.delete("/tasks", async (req, res) => {
+  tasksHandler.deleteAllTasks()
+  .then((result) => {
+    res.status(200).json(result);
+  })
+  .catch((error) => {
+    res.status(500).json(error);
+  });
+});
+
 module.exports = router;
