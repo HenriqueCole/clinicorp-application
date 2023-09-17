@@ -7,7 +7,12 @@ import clinicorpLogo from "@/assets/clinicorpLogo.png";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { PlusCircle } from "lucide-react";
 
@@ -21,7 +26,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -33,22 +38,23 @@ import {
   AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Form } from "@/components/ui/form";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowDown, ArrowLeft, ArrowUp } from "lucide-react";
 
 async function getData(): Promise<Task[]> {
-  const response = await fetch("http://localhost:3001/api/tasks")
-  const data = await response.json()
-  return data
+  const response = await fetch("http://localhost:3001/api/tasks");
+  const data = await response.json();
+  return data;
 }
 
 async function getUsers(): Promise<any[]> {
-  const response = await fetch("http://localhost:3001/api/users")
-  const data = await response.json()
-  return data
+  const response = await fetch("http://localhost:3001/api/users");
+  const data = await response.json();
+  return data;
 }
 
 const firebaseConfig = {
@@ -58,16 +64,17 @@ const firebaseConfig = {
   storageBucket: "clini-do.appspot.com",
   messagingSenderId: "512229656593",
   appId: "1:512229656593:web:b322c538c1f395c4f609b0",
-  measurementId: "G-9S3C1TZ415"
+  measurementId: "G-9S3C1TZ415",
 };
 
-
-
 export function Tasks() {
-  const [data, setData] = useState<Task[]>([])
-  const [users, setUsers] = useState<any[]>([])
-  const [userName, setUserName] = useState<string>("")
-  const [userImg, setUserImg] = useState<string>("")
+  const [data, setData] = useState<Task[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [userName, setUserName] = useState<string>("");
+  const [userImg, setUserImg] = useState<string>("");
+  const [newTask, setNewTask] = useState<string>("");
+  const [selectedPriority, setSelectedPriority] = useState<string>("");
+  const [selectedResponsible, setSelectedResponsible] = useState<string>("");
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -77,7 +84,7 @@ export function Tasks() {
     const users = await getUsers();
     setData(result);
     setUsers(users);
-    console.log("USERS: ", users)
+    console.log("USERS: ", users);
   };
 
   useEffect(() => {
@@ -93,31 +100,52 @@ export function Tasks() {
     fetchInitialData();
   }, []);
 
-  // Fetch data every 5 seconds
-  useEffect(() => {
-    const intervalId = setInterval(fetchData, 5000);
-    return () => clearInterval(intervalId);
-  }, []);
-
   const priorities = [
     {
       id: "1",
       name: "Baixa",
-      icon: <ArrowDown size={17} />
+      icon: <ArrowDown size={17} />,
     },
     {
       id: "2",
       name: "Média",
-      icon: <ArrowLeft size={17}/>
+      icon: <ArrowLeft size={17} />,
     },
     {
       id: "3",
       name: "Alta",
-      icon: <ArrowUp size={17}/>
-    }
-  ]
+      icon: <ArrowUp size={17} />,
+    },
+  ];
 
-  const { toast } = useToast()
+  const handleNewTaskSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    const task = {
+      createdBy: userName,
+      description: newTask,
+      isBlocked: false,
+      priority: selectedPriority,
+      responsible: selectedResponsible,
+      status: "To Do",
+    };
+
+    const response = await fetch("http://localhost:3001/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(task),
+    });
+    const data = await response.json();
+    console.log("Success:", data);
+    setNewTask("");
+    setSelectedPriority("");
+    setSelectedResponsible("");
+  };
+
+  const { toast } = useToast();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -128,92 +156,101 @@ export function Tasks() {
         </div>
         <div className="flex items-center gap-3">
           <h1 className="text-muted-foreground">Usuários no board</h1>
-          <Separator orientation="vertical" className="h-6"/>
-            <div className="flex items-center">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Avatar className="border-2 border-orange-500 w-12 h-12">
-                      <AvatarImage src={userImg} />
-                      <AvatarFallback>
-                        {userName[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {userName}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+          <Separator orientation="vertical" className="h-6" />
+          <div className="flex items-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Avatar className="border-2 border-orange-500 w-12 h-12">
+                    <AvatarImage src={userImg} />
+                    <AvatarFallback>{userName[0]}</AvatarFallback>
+                  </Avatar>
+                </TooltipTrigger>
+                <TooltipContent>{userName}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
       <div className="flex flex-col flex-1 p-6 space-y-11">
         <div className="flex flex-col leading-relaxed">
-          <h1 className="text-xl font-bold md:text-2xl">👋 Bem vindo, {userName}!</h1>
-          <span className="text-muted-foreground text-base">Aqui está a lista de tarefas</span>
+          <h1 className="text-xl font-bold md:text-2xl">
+            👋 Bem vindo, {userName}!
+          </h1>
+          <span className="text-muted-foreground text-base">
+            Aqui está a lista de tarefas
+          </span>
         </div>
         <div className="flex flex-col flex-1 space-y-4">
           <div className="flex flex-col flex-1">
             <AlertDialog>
               <AlertDialogTrigger>
-                <Button variant="default" className="flex items-center space-x-2">
+                <Button
+                  variant="default"
+                  className="flex items-center space-x-2"
+                >
                   <PlusCircle size={20} className="mr-2" />
                   Criar tarefa
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
-                <AlertDialogHeader className="flex flex-col space-y-5">
-                  <div className="space-y-2">
-                    <AlertDialogTitle>Criar tarefa</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Lembre-se de preencher todos os campos
-                    </AlertDialogDescription>
-                  </div>
-                </AlertDialogHeader>
-                  <div className="flex flex-col space-y-5">
-                    <div className="space-y-2">
-                      <span>
-                        Descrição
-                      </span>
-                      <Textarea 
-                        className="leading-relaxed resize-none"
-                        placeholder="Descreva o objetivo da tarefa..." 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <span>
-                        Responsável
-                      </span>
-                      <Select>
-                        <SelectTrigger className="p-5">
-                          <SelectValue placeholder="Selecione um usuário..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Usuários</SelectLabel>
-                            {users.map((user) => (
-                              <SelectItem key={user.id} value={user.id}>
-                                <div className="flex items-center space-x-2">
-                                  <Avatar className="border-2 border-orange-500 w-8 h-8">
-                                    <AvatarImage src={user.photoURL} />
-                                    <AvatarFallback>
-                                      teste
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span>{user.name}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <span>
-                          Prioridade
-                        </span>
-                        <Select>
+                <Form>
+                  <form onSubmit={handleNewTaskSubmit}>
+                    <AlertDialogHeader className="flex flex-col space-y-5">
+                      <div className="space-y-2">
+                        <AlertDialogTitle>Criar tarefa</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Lembre-se de preencher todos os campos
+                        </AlertDialogDescription>
+                      </div>
+                    </AlertDialogHeader>
+                    <div className="flex flex-col space-y-5">
+                      <div className="space-y-2">
+                        <span>Descrição</span>
+                        <Textarea
+                          className="leading-relaxed resize-none"
+                          placeholder="Descreva o objetivo da tarefa..."
+                          defaultValue={newTask}
+                          onChange={(event) => setNewTask(event.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <span>Responsável</span>
+                        <Select
+                          onValueChange={(value) =>
+                            setSelectedResponsible(value)
+                          }
+                          defaultValue={selectedResponsible}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um usuário..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Usuários</SelectLabel>
+                              {users.map((user) => (
+                                <SelectItem key={user.id} value={user.name}>
+                                  <div className="flex items-center space-x-2">
+                                    <Avatar className="border-2 border-orange-500 w-8 h-8">
+                                      <AvatarImage src={user.photoURL} />
+                                      <AvatarFallback>
+                                        {user.name[0]}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span>{user.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <span>Prioridade</span>
+                        <Select
+                          onValueChange={(value) => setSelectedPriority(value)}
+                          defaultValue={selectedPriority}
+                        >
                           <SelectTrigger className="p-5">
                             <SelectValue placeholder="Selecione a prioridade..." />
                           </SelectTrigger>
@@ -221,7 +258,10 @@ export function Tasks() {
                             <SelectGroup>
                               <SelectLabel>Prioridades</SelectLabel>
                               {priorities.map((priority) => (
-                                <SelectItem key={priority.id} value={priority.id}>
+                                <SelectItem
+                                  key={priority.id}
+                                  value={priority.name}
+                                >
                                   <div className="flex items-center space-x-2">
                                     {priority.icon}
                                     <span>{priority.name}</span>
@@ -231,28 +271,28 @@ export function Tasks() {
                             </SelectGroup>
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div className="flex flex-1 justify-center space-x-4">
+                        <AlertDialogCancel>
+                          <Button variant="ghost">Cancelar</Button>
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          type="submit"
+                          onClick={() =>{
+                            toast({
+                              title: "Tarefa criada com sucesso!",
+                              description: "A tarefa foi adicionada ao board.",
+                              duration: 5000,
+                            });
+                          }}
+                        >
+                          <PlusCircle size={20} className="mr-2" />
+                          Criar tarefa
+                        </AlertDialogAction>
+                      </div>
                     </div>
-                    <div className="flex flex-1 justify-center space-x-4">
-                      <AlertDialogCancel>
-                        <Button variant="ghost">
-                          Cancelar
-                        </Button>
-                      </AlertDialogCancel>
-                      <AlertDialogAction 
-                      onClick={ () => {
-                        toast({
-                          title: "Tarefa criada com sucesso!",
-                          description: "A tarefa foi criada com sucesso e já está disponível na lista de tarefas.",
-                          type: "foreground",
-                          duration: 4000,
-                        })
-                      }
-                    }>
-                        <PlusCircle size={20} className="mr-2" />
-                        Criar tarefa
-                      </AlertDialogAction>
-                    </div>
-                  </div>
+                  </form>
+                </Form>
               </AlertDialogContent>
             </AlertDialog>
             <DataTable columns={columns} data={data} />
@@ -261,6 +301,5 @@ export function Tasks() {
       </div>
       <Toaster />
     </div>
-  )
+  );
 }
-
