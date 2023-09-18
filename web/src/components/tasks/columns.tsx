@@ -310,7 +310,7 @@ export const columns: ColumnDef<Task>[] = [
                 <AlertDialogContent>
                   <form onSubmit={handleUpdateTask}>
                     <AlertDialogHeader className="flex flex-col space-y-5">
-                      <div className="space-y-2">
+                      <div className="mb-3">
                         <AlertDialogTitle>Editar tarefa</AlertDialogTitle>
                         <AlertDialogDescription>
                           Lembre-se de preencher todos os campos

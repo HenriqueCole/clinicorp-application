@@ -214,7 +214,7 @@ export function Tasks() {
               <AlertDialogContent>
                 <form onSubmit={handleNewTaskSubmit}>
                   <AlertDialogHeader className="flex flex-col space-y-5">
-                    <div className="space-y-2">
+                    <div className="mb-3">
                       <AlertDialogTitle>Criar tarefa</AlertDialogTitle>
                       <AlertDialogDescription>
                         Lembre-se de preencher todos os campos
