@@ -7,7 +7,7 @@ import {
   getTaskById,
   unblockTask,
   updateTask
-} from './api/tasks/tasks.handler'
+} from './api/tasks/tasks.handler.js'
 
 test('Check if the task creation succeeded', async () => {
   const task = await createTask({
