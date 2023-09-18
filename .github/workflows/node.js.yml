@@ -30,4 +30,5 @@ jobs:
         cd ./src
         cd ./services
         ls -la
+        pnpm i -D vitest
         npm test
