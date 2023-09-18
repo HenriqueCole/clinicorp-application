@@ -17,6 +17,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
     # Setup do Job
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 6.0.2
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
