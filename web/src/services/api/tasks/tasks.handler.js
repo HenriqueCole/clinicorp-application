@@ -15,14 +15,34 @@ async function getTaskById(id){
   return task;
 }
 
+async function getTaskByDescription(description){
+  const tasks = await get('tasks');
+  const task = tasks.find((task) => task.description === description);
+  return task;
+}
+
 async function updateTask(id, tasks){
+  const task = await getById('tasks', id);
+  if(task.isBlocked){
+    throw {
+      message: 'Task is blocked',
+      status: 400
+    }
+  }
   const savedTask = await post('tasks', id, tasks)
   return savedTask;
 }
 
 async function deleteTask(id){
-  const task = await remove('tasks', id);
-  return task;
+  const task = await getById('tasks', id);
+  if(task.isBlocked){
+    throw {
+      message: 'Task is blocked',
+      status: 400
+    }
+  }
+  const deletedTask = await remove('tasks', id)
+  return deletedTask;
 }
 
 async function deleteAllTasks(){
@@ -55,4 +75,5 @@ module.exports = {
   blockTask,
   unblockTask,
   deleteAllTasks,
+  getTaskByDescription
 };
