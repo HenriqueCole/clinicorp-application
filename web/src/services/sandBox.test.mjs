@@ -1,5 +1,13 @@
 import { expect, test } from 'vitest'
-import { blockTask, createTask, deleteTask, getTaskByDescription, getTaskById, unblockTask, updateTask } from './api/tasks/tasks.handler'
+import {
+  blockTask,
+  createTask,
+  deleteTask,
+  getTaskByDescription,
+  getTaskById,
+  unblockTask,
+  updateTask
+} from './api/tasks/tasks.handler'
 
 test('Check if the task creation succeeded', async () => {
   const task = await createTask({
