@@ -42,19 +42,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+// import { useFetch } from "@/hooks/useFetch";
 import { ArrowDown, ArrowLeft, ArrowUp } from "lucide-react";
-
-// async function getData(): Promise<Task[]> {
-//   const response = await fetch("http://localhost:3001/api/tasks");
-//   const data = await response.json();
-//   return data;
-// }
-
-// async function getUsers(): Promise<any[]> {
-//   const response = await fetch("http://localhost:3001/api/users");
-//   const data = await response.json();
-//   return data;
-// }
 
 const firebaseConfig = {
   apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
@@ -67,30 +56,33 @@ const firebaseConfig = {
 };
 
 export function Tasks() {
-  const [data, setData] = useState<Task[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
   const [userName, setUserName] = useState<string>("");
   const [userImg, setUserImg] = useState<string>("");
   const [newTask, setNewTask] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("");
   const [selectedResponsible, setSelectedResponsible] = useState<string>("");
   const [cancelClicked, setCancelClicked] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+
+  // const { data: users } = useFetch<any[]>("http://localhost:3001/api/users")
+  // console.log("USERS: ", users);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await fetch("http://localhost:3001/api/tasks");
         const data = await response.json();
-        setData(data);
+        setTasks(data);
         console.log("DATA: ", data);
       } catch (error) {
         console.error(error);
       }
     }
-
+  
     async function fetchUsers() {
       try {
         const response = await fetch("http://localhost:3001/api/users");
@@ -101,7 +93,7 @@ export function Tasks() {
         console.error(error);
       }
     }
-
+  
     fetchData();
     fetchUsers();
   }, []);
@@ -271,7 +263,7 @@ export function Tasks() {
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Usuários</SelectLabel>
-                            {users.map((user) => (
+                            {users?.map((user) => (
                               <SelectItem key={user.id} value={user.name}>
                                 <div className="flex items-center space-x-2">
                                   <Avatar className="border-2 border-orange-500 w-8 h-8">
@@ -339,7 +331,7 @@ export function Tasks() {
                 </form>
               </AlertDialogContent>
             </AlertDialog>
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={columns} data={tasks} />
           </div>
         </div>
       </div>

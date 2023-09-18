@@ -1,4 +1,4 @@
-const {get, post } = require('../../crud/firebase');
+const { get, post } = require('../../crud/firebase');
 
 async function getUsers() {
   const users = await get('users');

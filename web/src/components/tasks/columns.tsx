@@ -26,6 +26,7 @@ import { useState } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import { useFetch } from "@/hooks/useFetch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,11 +59,11 @@ export type Task = {
   isBlocked: boolean;
 };
 
-async function getUsers(): Promise<any[]> {
-  const response = await fetch("http://localhost:3001/api/users");
-  const data = await response.json();
-  return data;
-}
+// async function getUsers(): Promise<any[]> {
+//   const response = await fetch("http://localhost:3001/api/users");
+//   const data = await response.json();
+//   return data;
+// }
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -144,7 +145,7 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => {
       const task = row.original;
 
-      const [users, setUsers] = useState<any[]>([]);
+      // const [users, setUsers] = useState<any[]>([]);
       const [blockText, setBlockText] = useState(
         task.isBlocked ? "Desbloquear tarefa" : "Bloquear tarefa"
       );
@@ -167,12 +168,7 @@ export const columns: ColumnDef<Task>[] = [
         },
       ];
 
-      const fetchData = async () => {
-        const users = await getUsers();
-        setUsers(users);
-      };
-
-      fetchData();
+      const { data: users } = useFetch<any[]>("http://localhost:3001/api/users");
 
       return (
         <DropdownMenu>
@@ -225,7 +221,7 @@ export const columns: ColumnDef<Task>[] = [
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Usuários</SelectLabel>
-                            {users.map((user) => (
+                            {users?.map((user) => (
                               <SelectItem key={user.id} value={user.name}>
                                 <div className="flex items-center space-x-2">
                                   <Avatar className="border-2 border-orange-500 w-8 h-8">
