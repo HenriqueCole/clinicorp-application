@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 import clinicorpLogo from "@/assets/clinicorpLogo.png";
 import googleLogo from "@/assets/googleLogo.png";
@@ -14,6 +15,8 @@ import { getAuth } from 'firebase/auth';
 
 export function Login() {
   const [user, setUser] = useState({});
+  
+  const navigate = useNavigate();
   
   const firebaseConfig = {
     apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
@@ -53,14 +56,14 @@ export function Login() {
                 .then((response) => response.json())
                 .then((data) => {
                   console.log("Success:", data);
-                  window.location.href = "/tasks";
+                  navigate("/tasks");
                 })
                 .catch((error) => {
                   console.error("Error:", error);
                 });
             } else {
               console.log("User already exists:", result.user.displayName);
-              window.location.href = "/tasks";
+              navigate("/tasks");
             }
           })
           .catch((error) => {

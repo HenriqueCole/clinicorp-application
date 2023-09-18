@@ -23,7 +23,6 @@ router.get("/tasks", async (req, res) => {
   });
 });
 
-
 router.get("/tasks/:id", async (req, res) => {
   tasksHandler.getTaskById(req.params.id)
   .then((result) => {
