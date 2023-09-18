@@ -28,5 +28,6 @@ jobs:
         cd ./src
         cd ./services
         npm install
+        npm install vitest
         node sandBox.test.js
         ls -la
