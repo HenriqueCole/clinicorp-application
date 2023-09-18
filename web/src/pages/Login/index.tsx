@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import clinicorpLogo from "@/assets/clinicorpLogo.png";
@@ -10,13 +9,16 @@ import googleLogo from "@/assets/googleLogo.png";
 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 export function Login() {
-  const [user, setUser] = useState({});
   
   const navigate = useNavigate();
+
+  const { toast } = useToast();
   
   const firebaseConfig = {
     apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
@@ -36,12 +38,11 @@ export function Login() {
 
     signInWithPopup(auth, provider)
       .then((result) => {
-        setUser(result.user);
 
         fetch("http://localhost:3001/api/users")
           .then((response) => response.json())
           .then((data) => {
-            const userExists = data.some((user) => user.name === result.user.displayName);
+            const userExists = data.some((user: { name: string | null; }) => user.name === result.user.displayName);
             if (!userExists) {
               fetch("http://localhost:3001/api/users", {
                 method: "POST",
@@ -106,7 +107,14 @@ export function Login() {
                   autoCorrect="off"
                 />
               </div>
-              <Button>Entrar com o Email</Button>
+              <Button onClick={() => {
+                toast({
+                  title: "Entre com o google!",
+                  description: "No momento só é possível entrar com o google.",
+                  duration: 5000,
+                  variant: "destructive",
+                });
+              }}>Entrar com o Email</Button>
             </div>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -146,6 +154,7 @@ export function Login() {
           </p>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
