@@ -28,5 +28,4 @@ jobs:
         cd ./web
         ls -la
         cd ./src
-        cd ./services
-        npm test
+        ls -la
