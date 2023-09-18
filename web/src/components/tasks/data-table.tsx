@@ -114,7 +114,6 @@ export function DataTable<TData, TValue>({
               <div className="flex flex-1 items-center px-3">
                 <Search size={17} className="text-zinc-500"/>
                 <Input placeholder="Status" className="border-none focus-visible:ring-0 text-base" onChange={
-                  //sort the status checkboxes by name
                   (event) => {
                     const { value } = event.target;
                     const sortedCheckboxes = statusCheckboxes.sort((a, b) => {
@@ -175,10 +174,12 @@ export function DataTable<TData, TValue>({
               </div>
               <Separator />
               <div className="flex flex-col p-1">
-                {priorityCheckboxes.map(checkbox => (
+              {priorityCheckboxes.map(checkbox => (
                   <div key={checkbox.id} className="flex items-center gap-3 p-[0.2rem] flex-1 rounded hover:bg-white/5">
-                    <Checkbox id={checkbox.name} onClick={
-                      () => {
+                    <Checkbox
+                      id={checkbox.name}
+                      checked={table.getColumn("priority")?.getFilterValue() === checkbox.name}
+                      onClick={() => {
                         const { name } = checkbox;
                         const currentValue = table.getColumn("priority")?.getFilterValue();
                         if (currentValue === name) {
@@ -186,8 +187,8 @@ export function DataTable<TData, TValue>({
                         } else {
                           table.getColumn("priority")?.setFilterValue(name);
                         }
-                      }
-                    }/>
+                      }}
+                    />
                     <label htmlFor={checkbox.name} className="font-semibold flex flex-1">
                       {checkbox.name}
                     </label>

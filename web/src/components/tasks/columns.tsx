@@ -153,6 +153,7 @@ export const columns: ColumnDef<Task>[] = [
         task.isBlocked ? "Desbloquear tarefa" : "Bloquear tarefa"
       );
       const { toast } = useToast();
+
       const priorities = [
         {
           id: "1",
@@ -168,6 +169,21 @@ export const columns: ColumnDef<Task>[] = [
           id: "3",
           name: "Alta",
           icon: <ArrowUp size={17} />,
+        },
+      ];
+
+      const status = [
+        {
+          id: "1",
+          name: "To do",
+        },
+        {
+          id: "2",
+          name: "Doing",
+        },
+        {
+          id: "3",
+          name: "Done",
         },
       ];
 
@@ -204,6 +220,48 @@ export const columns: ColumnDef<Task>[] = [
         fetchInitialData();
       }, []);
 
+      const [isOpen, setIsOpen] = useState(false);
+
+      const [newDescription, setNewDescription] = useState<string>(
+        task.description
+      );
+
+      const [newResponsible, setNewResponsible] = useState<string>(
+        task.responsible
+      );
+
+      const [newPriority, setNewPriority] = useState<string>(task.priority);
+
+      const [newStatus, setNewStatus] = useState<string>(task.status);
+      
+      const handleUpdateTask = async (
+        event: React.FormEvent<HTMLFormElement>
+      ) => {
+        event.preventDefault();
+
+        const newTask = {
+          description: newDescription,
+          responsible: newResponsible,
+          priority: newPriority,
+          status: newStatus,
+          createdBy: task.createdBy,
+        };
+        
+        const response = await fetch(
+          `http://localhost:3001/api/tasks/${task.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTask),
+          }
+        );
+        const data = await response.json();
+        console.log("success: ", data);
+        setIsOpen(false);
+      }
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -215,108 +273,167 @@ export const columns: ColumnDef<Task>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(task.id)}
+              onClick={() => {
+                navigator.clipboard.writeText(task.id)
+                toast({
+                  title: "ID da tarefa copiado com sucesso!",
+                  description: "O ID da tarefa foi copiado para a área de transferência.",
+                  duration: 5000,
+                });
+              }}
             >
               <Copy size={17} className="mr-2" />
               Copiar ID da tarefa
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <AlertDialog>
-              <AlertDialogTrigger>
+              <AlertDialogTrigger
+                onClick={() => {
+                  if (task.isBlocked && loggedUserName !== task.createdBy) {
+                    toast({
+                      title: `${task.createdBy} bloqueou esta tarefa!`,
+                      description: "Você não pode editar uma tarefa bloqueada.",
+                      duration: 5000,
+                      variant: "destructive",
+                    });
+                  } else {
+                    setIsOpen(true);
+                  }
+                }}
+              >
                 <div className="flex items-center justify-center flex-1 px-2 hover:bg-zinc-100 rounded">
                   <Edit size={17} className="mr-2" />
                   <p className="text-sm">Editar tarefa</p>
                 </div>
               </AlertDialogTrigger>
-              <AlertDialogContent>
-                <form>
-                  <AlertDialogHeader className="flex flex-col space-y-5">
-                    <div className="space-y-2">
-                      <AlertDialogTitle>Editar tarefa</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Lembre-se de preencher todos os campos
-                      </AlertDialogDescription>
+              {isOpen && (
+                <AlertDialogContent>
+                  <form onSubmit={handleUpdateTask}>
+                    <AlertDialogHeader className="flex flex-col space-y-5">
+                      <div className="space-y-2">
+                        <AlertDialogTitle>Editar tarefa</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Lembre-se de preencher todos os campos
+                        </AlertDialogDescription>
+                      </div>
+                    </AlertDialogHeader>
+                    <div className="flex flex-col space-y-5">
+                      <div className="space-y-2">
+                        <span>Descrição</span>
+                        <Textarea
+                          className="leading-relaxed resize-none"
+                          placeholder="Descreva o objetivo da tarefa..."
+                          defaultValue={newDescription}
+                          onChange={(event) => {
+                            setNewDescription(event.target.value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <span>Responsável</span>
+                        <Select
+                          defaultValue={newResponsible}
+                          onValueChange={(value) => {
+                            setNewResponsible(value);
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Usuários</SelectLabel>
+                              {users?.map((user) => (
+                                <SelectItem key={user.id} value={user.name}>
+                                  <div className="flex items-center space-x-2">
+                                    <Avatar className="border-2 border-orange-500 w-8 h-8">
+                                      <AvatarImage src={user.photoURL} />
+                                      <AvatarFallback>
+                                        {user.name[0]}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span>{user.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <span>Prioridade</span>
+                        <Select
+                          defaultValue={newPriority}
+                          onValueChange={(value) => {
+                            setNewPriority(value);
+                          }}
+                        >
+                          <SelectTrigger className="p-5">
+                            <SelectValue placeholder="Selecione a prioridade..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Prioridades</SelectLabel>
+                              {priorities.map((priority) => (
+                                <SelectItem
+                                  key={priority.id}
+                                  value={priority.name}
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    {priority.icon}
+                                    <span>{priority.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <span>Status</span>
+                        <Select
+                          defaultValue={newStatus}
+                          onValueChange={(value) => {
+                            setNewStatus(value);
+                          }}
+                        >
+                          <SelectTrigger className="p-5">
+                            <SelectValue placeholder="Selecione o status..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Status</SelectLabel>
+                              {status.map((status) => (
+                                <SelectItem key={status.id} value={status.name}>
+                                  <span>{status.name}</span>
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex flex-1 justify-center space-x-4">
+                        <AlertDialogCancel>
+                          <Button variant="ghost">Cancelar</Button>
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          type="submit"
+                          onClick={() => {
+                            toast({
+                              title: "Tarefa editada com sucesso!",
+                              description: "A tarefa foi editada e salva.",
+                              duration: 5000,
+                            });
+                          }}
+                        >
+                          <PlusCircle size={20} className="mr-2" />
+                          Editar tarefa
+                        </AlertDialogAction>
+                      </div>
                     </div>
-                  </AlertDialogHeader>
-                  <div className="flex flex-col space-y-5">
-                    <div className="space-y-2">
-                      <span>Descrição</span>
-                      <Textarea
-                        className="leading-relaxed resize-none"
-                        placeholder="Descreva o objetivo da tarefa..."
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <span>Responsável</span>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um usuário..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Usuários</SelectLabel>
-                            {users?.map((user) => (
-                              <SelectItem key={user.id} value={user.name}>
-                                <div className="flex items-center space-x-2">
-                                  <Avatar className="border-2 border-orange-500 w-8 h-8">
-                                    <AvatarImage src={user.photoURL} />
-                                    <AvatarFallback>
-                                      {user.name[0]}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span>{user.name}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <span>Prioridade</span>
-                      <Select>
-                        <SelectTrigger className="p-5">
-                          <SelectValue placeholder="Selecione a prioridade..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Prioridades</SelectLabel>
-                            {priorities.map((priority) => (
-                              <SelectItem
-                                key={priority.id}
-                                value={priority.name}
-                              >
-                                <div className="flex items-center space-x-2">
-                                  {priority.icon}
-                                  <span>{priority.name}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex flex-1 justify-center space-x-4">
-                      <AlertDialogCancel>
-                        <Button variant="ghost">Cancelar</Button>
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        type="submit"
-                        onClick={() => {
-                          toast({
-                            title: "Tarefa criada com sucesso!",
-                            description: "A tarefa foi adicionada ao board.",
-                            duration: 5000,
-                          });
-                        }}
-                      >
-                        <PlusCircle size={20} className="mr-2" />
-                        Criar tarefa
-                      </AlertDialogAction>
-                    </div>
-                  </div>
-                </form>
-              </AlertDialogContent>
+                  </form>
+                </AlertDialogContent>
+              )}
             </AlertDialog>
 
             {loggedUserName === task.createdBy && (
@@ -383,10 +500,10 @@ export const columns: ColumnDef<Task>[] = [
               onClick={() => {
                 if (task.isBlocked) {
                   toast({
-                    title: "A Tarefa está bloqueada!",
+                    title: `${task.createdBy} bloqueou esta tarefa!`,
                     description: "Você não pode excluir uma tarefa bloqueada.",
                     duration: 5000,
-                    variant: "destructive"
+                    variant: "destructive",
                   });
                   return;
                 } else {
