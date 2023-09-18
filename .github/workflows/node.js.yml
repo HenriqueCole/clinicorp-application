@@ -27,4 +27,5 @@ jobs:
         cd ./web
         cd ./src
         cd ./services
+        npm install
         ls -la
