@@ -28,4 +28,5 @@ jobs:
         cd ./src
         cd ./services
         npm install
+        npm test
         ls -la
