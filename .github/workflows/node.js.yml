@@ -30,3 +30,4 @@ jobs:
         cd ./src
         cd ./services
         ls -la
+        pnpm test
