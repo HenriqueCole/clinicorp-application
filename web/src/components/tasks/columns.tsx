@@ -22,7 +22,7 @@ import {
   PlusCircle,
   UnlockIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
@@ -48,6 +48,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+
+import { initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export type Task = {
   id: string;
@@ -168,7 +171,38 @@ export const columns: ColumnDef<Task>[] = [
         },
       ];
 
-      const { data: users } = useFetch<any[]>("http://localhost:3001/api/users");
+      const firebaseConfig = {
+        apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
+        authDomain: "clini-do.firebaseapp.com",
+        projectId: "clini-do",
+        storageBucket: "clini-do.appspot.com",
+        messagingSenderId: "512229656593",
+        appId: "1:512229656593:web:b322c538c1f395c4f609b0",
+        measurementId: "G-9S3C1TZ415",
+      };
+
+      const app = initializeApp(firebaseConfig);
+
+      const { data: users } = useFetch<any[]>(
+        "http://localhost:3001/api/users"
+      );
+
+      const auth = getAuth(app);
+
+      const [loggedUserName, setLoggedUserName] = useState<string>("");
+
+      useEffect(() => {
+        async function fetchInitialData() {
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              setLoggedUserName(user.displayName || "");
+            } else {
+              setLoggedUserName("");
+            }
+          });
+        }
+        fetchInitialData();
+      }, []);
 
       return (
         <DropdownMenu>
@@ -285,81 +319,93 @@ export const columns: ColumnDef<Task>[] = [
               </AlertDialogContent>
             </AlertDialog>
 
+            {loggedUserName === task.createdBy && (
+              <DropdownMenuItem
+                onClick={() => {
+                  fetch(`http://localhost:3001/api/tasks/${task.id}`, {})
+                    .then((response) => response.json())
+                    .then((data) => {
+                      console.log("DATA: ", data.isBlocked);
+                      if (data.isBlocked) {
+                        fetch(
+                          `http://localhost:3001/api/tasks/unblock/${task.id}`,
+                          {
+                            method: "PUT",
+                          }
+                        )
+                          .then((response) => response.json())
+                          .then((data) => {
+                            console.log("DATA: ", data);
+                            setBlockText("Bloquear tarefa");
+                            toast({
+                              title: "Tarefa desbloqueada com sucesso!",
+                              description:
+                                "Agora outros usuários podem editá-la.",
+                              duration: 5000,
+                            });
+                          })
+                          .catch((error) => {
+                            console.error("Error: ", error);
+                          });
+                      } else {
+                        fetch(
+                          `http://localhost:3001/api/tasks/block/${task.id}`,
+                          {
+                            method: "PUT",
+                          }
+                        )
+                          .then((response) => response.json())
+                          .then((data) => {
+                            console.log("DATA: ", data);
+                            setBlockText("Desbloquear tarefa");
+                            toast({
+                              title: "Tarefa bloqueada com sucesso!",
+                              description: "Nenhum usuário poderá editá-la.",
+                              duration: 5000,
+                            });
+                          })
+                          .catch((error) => {
+                            console.error("Error: ", error);
+                          });
+                      }
+                    });
+                }}
+              >
+                {blockText === "Bloquear tarefa" ? (
+                  <LockIcon size={17} className="mr-2" />
+                ) : (
+                  <UnlockIcon size={17} className="mr-2" />
+                )}
+                {blockText}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={() => {
-                fetch(`http://localhost:3001/api/tasks/${task.id}`, {})
-                  .then((response) => response.json())
-                  .then((data) => {
-                    console.log("DATA: ", data.isBlocked);
-                    if (data.isBlocked) {
-                      fetch(
-                        `http://localhost:3001/api/tasks/unblock/${task.id}`,
-                        {
-                          method: "PUT",
-                        }
-                      )
-                        .then((response) => response.json())
-                        .then((data) => {
-                          console.log("DATA: ", data);
-                          setBlockText("Bloquear tarefa");
-                          toast({
-                            title: "Tarefa desbloqueada com sucesso!",
-                            description:
-                              "Agora outros usuários podem editá-la.",
-                            duration: 5000,
-                          });
-                        })
-                        .catch((error) => {
-                          console.error("Error: ", error);
-                        });
-                    } else {
-                      fetch(
-                        `http://localhost:3001/api/tasks/block/${task.id}`,
-                        {
-                          method: "PUT",
-                        }
-                      )
-                        .then((response) => response.json())
-                        .then((data) => {
-                          console.log("DATA: ", data);
-                          setBlockText("Desbloquear tarefa");
-                          toast({
-                            title: "Tarefa bloqueada com sucesso!",
-                            description: "Nenhum usuário poderá editá-la.",
-                            duration: 5000,
-                          });
-                        })
-                        .catch((error) => {
-                          console.error("Error: ", error);
-                        });
-                    }
-                  });
-              }}
-            >
-              {blockText === "Bloquear tarefa" ? (
-                <LockIcon size={17} className="mr-2" />
-              ) : (
-                <UnlockIcon size={17} className="mr-2" />
-              )}
-              {blockText}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                fetch(`http://localhost:3001/api/tasks/${task.id}`, {
-                  method: "DELETE",
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("DATA: ", data);
+                if (task.isBlocked) {
                   toast({
-                    title: "Tarefa excluída com sucesso!",
-                    description: "A tarefa foi excluída do board.",
+                    title: "A Tarefa está bloqueada!",
+                    description: "Você não pode excluir uma tarefa bloqueada.",
                     duration: 5000,
+                    variant: "destructive"
                   });
-                })
-                .catch((error) => {
-                  console.error("Error: ", error);
-                });
+                  return;
+                } else {
+                  fetch(`http://localhost:3001/api/tasks/${task.id}`, {
+                    method: "DELETE",
+                  })
+                    .then((response) => response.json())
+                    .then((data) => {
+                      console.log("DATA: ", data);
+                      toast({
+                        title: "Tarefa excluída com sucesso!",
+                        description: "A tarefa foi excluída do board.",
+                        duration: 5000,
+                      });
+                    })
+                    .catch((error) => {
+                      console.error("Error: ", error);
+                    });
+                }
               }}
             >
               <Delete size={17} className="mr-2" />
