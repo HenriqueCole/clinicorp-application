@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
-const tasksRoute = require("./api/tasks/tasks.controller");
-const usersRoute = require("./api/users/users.controller");
+const tasksRoute = require("./src/api/tasks/tasks.controller");
+const usersRoute = require("./src/api/users/users.controller");
 
 const port = 3001;
 

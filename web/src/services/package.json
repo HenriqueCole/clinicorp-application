@@ -2,10 +2,11 @@
   "name": "services",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "vitest"
+    "start": "nodemon app.js",
+    "test": "vitest",
+    "vercel-build": "echo hello"
   },
   "keywords": [],
   "author": "",
