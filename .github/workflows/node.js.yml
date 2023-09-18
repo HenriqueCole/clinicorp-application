@@ -27,7 +27,7 @@ jobs:
     - run: |
         cd ./web
         ls -la
-        # cd ./src
-        # cd ./services
-        # pnpm install
-        # pnpm test
+        cd ./src
+        cd ./services
+        pnpm install
+        pnpm test
