@@ -26,4 +26,5 @@ jobs:
     - run: |
         cd ./web
         cd ./src
+        cd ./services
         ls -la
