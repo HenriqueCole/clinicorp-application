@@ -42,7 +42,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-// import { useFetch } from "@/hooks/useFetch";
 import { ArrowDown, ArrowLeft, ArrowUp } from "lucide-react";
 
 const firebaseConfig = {
@@ -68,16 +67,12 @@ export function Tasks() {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // const { data: users } = useFetch<any[]>("http://localhost:3001/api/users")
-  // console.log("USERS: ", users);
-
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await fetch("http://localhost:3001/api/tasks");
         const data = await response.json();
         setTasks(data);
-        console.log("DATA: ", data);
       } catch (error) {
         console.error(error);
       }
@@ -88,7 +83,6 @@ export function Tasks() {
         const response = await fetch("http://localhost:3001/api/users");
         const data = await response.json();
         setUsers(data);
-        console.log("USERS: ", data);
       } catch (error) {
         console.error(error);
       }
@@ -102,20 +96,6 @@ export function Tasks() {
   const handleCancelClick = () => {
     setCancelClicked(true);
   };
-
-  // const fetchData = async () => {
-  //   try {
-  //     const result = await getData();
-  //     const users = await getUsers();
-  //     setData(result);
-  //     setUsers(users);
-  //     console.log("USERS: ", users);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // fetchData();
 
   useEffect(() => {
     async function fetchInitialData() {
