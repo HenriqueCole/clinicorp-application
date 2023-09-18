@@ -29,6 +29,4 @@ jobs:
         ls -la
         cd ./src
         cd ./services
-        ls -la
-        npm i -D vitest
         npm test
