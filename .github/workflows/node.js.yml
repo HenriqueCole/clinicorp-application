@@ -29,6 +29,5 @@ jobs:
         ls -la
         cd ./src
         cd ./services
-        npm i -G pnpm
-        pnpm install
-        pnpm test
+        npm install
+        npm test
