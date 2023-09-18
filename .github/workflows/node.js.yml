@@ -29,5 +29,5 @@ jobs:
         cd ./services
         npm install
         npm install vitest
-        node sandBox.test.js
+        node sandBox.test.mjs
         ls -la
