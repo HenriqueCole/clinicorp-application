@@ -25,9 +25,4 @@ jobs:
     # ./Setup do Job
     - run: |
         cd ./web
-        cd ./src
-        cd ./services
-        # npm install
-        # npm install -D vitest
-        # node sandBox.test.mjs
         ls -la
