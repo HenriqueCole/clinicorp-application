@@ -39,12 +39,12 @@ export function Login() {
     signInWithPopup(auth, provider)
       .then((result) => {
 
-        fetch("http://localhost:3001/api/users")
+        fetch("https://clinicorp-application-api.vercel.app/api/users")
           .then((response) => response.json())
           .then((data) => {
             const userExists = data.some((user: { name: string | null; }) => user.name === result.user.displayName);
             if (!userExists) {
-              fetch("http://localhost:3001/api/users", {
+              fetch("https://clinicorp-application-api.vercel.app/api/users", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json"

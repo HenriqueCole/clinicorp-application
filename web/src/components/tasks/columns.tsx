@@ -194,7 +194,7 @@ export const columns: ColumnDef<Task>[] = [
       const app = initializeApp(firebaseConfig);
 
       const { data: users } = useFetch<any[]>(
-        "http://localhost:3001/api/users"
+        "https://clinicorp-application-api.vercel.app/api/users"
       );
 
       const auth = getAuth(app);
@@ -242,7 +242,7 @@ export const columns: ColumnDef<Task>[] = [
         };
         
         const response = await fetch(
-          `http://localhost:3001/api/tasks/${task.id}`,
+          `https://clinicorp-application-api.vercel.app/api/tasks/${task.id}`,
           {
             method: "PUT",
             headers: {
@@ -433,13 +433,13 @@ export const columns: ColumnDef<Task>[] = [
             {loggedUserName === task.createdBy && (
               <DropdownMenuItem
                 onClick={() => {
-                  fetch(`http://localhost:3001/api/tasks/${task.id}`, {})
+                  fetch(`https://clinicorp-application-api.vercel.app/api/tasks/${task.id}`, {})
                     .then((response) => response.json())
                     .then((data) => {
                       console.log("DATA: ", data.isBlocked);
                       if (data.isBlocked) {
                         fetch(
-                          `http://localhost:3001/api/tasks/unblock/${task.id}`,
+                          `https://clinicorp-application-api.vercel.app/api/tasks/unblock${task.id}`,
                           {
                             method: "PUT",
                           }
@@ -460,7 +460,7 @@ export const columns: ColumnDef<Task>[] = [
                           });
                       } else {
                         fetch(
-                          `http://localhost:3001/api/tasks/block/${task.id}`,
+                          `https://clinicorp-application-api.vercel.app/api/tasks/block${task.id}`,
                           {
                             method: "PUT",
                           }
@@ -501,7 +501,7 @@ export const columns: ColumnDef<Task>[] = [
                   });
                   return;
                 } else {
-                  fetch(`http://localhost:3001/api/tasks/${task.id}`, {
+                  fetch(`https://clinicorp-application-api.vercel.app/api/tasks/${task.id}`, {
                     method: "DELETE",
                   })
                     .then((response) => response.json())

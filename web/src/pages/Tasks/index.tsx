@@ -70,7 +70,7 @@ export function Tasks() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3001/api/tasks");
+        const response = await fetch("https://clinicorp-application-api.vercel.app/api/tasks");
         const data = await response.json();
         setTasks(data);
       } catch (error) {
@@ -80,7 +80,7 @@ export function Tasks() {
   
     async function fetchUsers() {
       try {
-        const response = await fetch("http://localhost:3001/api/users");
+        const response = await fetch("https://clinicorp-application-api.vercel.app/api/users");
         const data = await response.json();
         setUsers(data);
       } catch (error) {
@@ -149,7 +149,7 @@ export function Tasks() {
       status: "To Do",
     };
 
-    const response = await fetch("http://localhost:3001/api/tasks", {
+    const response = await fetch("https://clinicorp-application-api.vercel.app/api/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
