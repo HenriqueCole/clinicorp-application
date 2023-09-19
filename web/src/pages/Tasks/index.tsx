@@ -7,14 +7,8 @@ import clinicorpLogo from "@/assets/clinicorpLogo.png";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-import { PlusCircle } from "lucide-react";
+import { LogOut, PlusCircle } from "lucide-react";
 
 import { Task, columns } from "@/components/tasks/columns";
 import { DataTable } from "@/components/tasks/data-table";
@@ -40,9 +34,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowDown, ArrowLeft, ArrowUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
@@ -70,28 +72,31 @@ export function Tasks() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("https://clinicorp-application-api.vercel.app/api/tasks");
+        const response = await fetch(
+          "https://clinicorp-application-api.vercel.app/api/tasks"
+        );
         const data = await response.json();
         setTasks(data);
       } catch (error) {
         console.error(error);
       }
     }
-  
+
     async function fetchUsers() {
       try {
-        const response = await fetch("https://clinicorp-application-api.vercel.app/api/users");
+        const response = await fetch(
+          "https://clinicorp-application-api.vercel.app/api/users"
+        );
         const data = await response.json();
         setUsers(data);
       } catch (error) {
         console.error(error);
       }
     }
-  
+
     fetchData();
     fetchUsers();
   }, []);
-
 
   const handleCancelClick = () => {
     setCancelClicked(true);
@@ -149,13 +154,16 @@ export function Tasks() {
       status: "To Do",
     };
 
-    const response = await fetch("https://clinicorp-application-api.vercel.app/api/tasks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
+    const response = await fetch(
+      "https://clinicorp-application-api.vercel.app/api/tasks",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      }
+    );
     const data = await response.json();
     console.log("Success:", data);
     setNewTask("");
@@ -164,6 +172,8 @@ export function Tasks() {
   };
 
   const { toast } = useToast();
+  
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -176,17 +186,39 @@ export function Tasks() {
           <h1 className="text-muted-foreground">Usuários no board</h1>
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center">
-            <TooltipProvider>
+            {/* <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
-                  <Avatar className="border-2 border-orange-500 w-12 h-12">
+                <TooltipTrigger> */}
+            <Menubar className="border-none shadow-none cursor-pointer rounded-full">
+              <MenubarMenu>
+                <MenubarTrigger className="rounded-full w-16 flex justify-center items-center">
+                  <Avatar className="border-2 border-orange-500 w-12 h-12 cursor-pointer">
                     <AvatarImage src={userImg} />
                     <AvatarFallback>{userName[0]}</AvatarFallback>
                   </Avatar>
-                </TooltipTrigger>
+                </MenubarTrigger>
+                <MenubarContent>
+                  <MenubarItem
+                    onClick={() => {
+                      auth.signOut();
+                      toast({
+                        title: "Logout realizado com sucesso!",
+                        description: "Você será redirecionado para a página de login.",
+                        duration: 5000,
+                      });
+                      navigate("/");
+                    }}
+                  >
+                    <LogOut size={20} className="mr-2" />
+                    Logout
+                  </MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
+            {/* </TooltipTrigger>
                 <TooltipContent>{userName}</TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
           </div>
         </div>
       </div>
