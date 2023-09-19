@@ -1,25 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import clinicorpLogo from "@/assets/clinicorpLogo.png";
 import googleLogo from "@/assets/googleLogo.png";
+import { Moon, Sun } from "lucide-react";
 
-// const { auth } = require('../../services/crud/firebase');
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 export function Login() {
-  
   const navigate = useNavigate();
 
   const { toast } = useToast();
-  
+
   const firebaseConfig = {
     apiKey: "AIzaSyDrr6S8R_fBPY37C1yNDXkCxnI0HUq9KAI",
     authDomain: "clini-do.firebaseapp.com",
@@ -27,9 +32,9 @@ export function Login() {
     storageBucket: "clini-do.appspot.com",
     messagingSenderId: "512229656593",
     appId: "1:512229656593:web:b322c538c1f395c4f609b0",
-    measurementId: "G-9S3C1TZ415"
+    measurementId: "G-9S3C1TZ415",
   };
-  
+
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
@@ -38,21 +43,23 @@ export function Login() {
 
     signInWithPopup(auth, provider)
       .then((result) => {
-
         fetch("https://clinicorp-application-api.vercel.app/api/users")
           .then((response) => response.json())
           .then((data) => {
-            const userExists = data.some((user: { name: string | null; }) => user.name === result.user.displayName);
+            const userExists = data.some(
+              (user: { name: string | null }) =>
+                user.name === result.user.displayName
+            );
             if (!userExists) {
               fetch("https://clinicorp-application-api.vercel.app/api/users", {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json"
+                  "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                   name: result.user.displayName,
-                  photoURL: result.user.photoURL
-                })
+                  photoURL: result.user.photoURL,
+                }),
               })
                 .then((response) => response.json())
                 .then((data) => {
@@ -78,6 +85,39 @@ export function Login() {
 
   return (
     <div className="min-h-screen flex flex-col p-6 space-y-20">
+      <div className="flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => {
+                const body = document.querySelector("body");
+                if (body) {
+                  body.classList.remove("dark");
+                }
+              }}
+            >
+              Light
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                const body = document.querySelector("body");
+                if (body) {
+                  body.classList.add("dark");
+                }
+              }}
+            >
+              Dark
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="flex items-center justify-center">
         <img src={clinicorpLogo} alt="" />
         <h1 className="text-3xl font-bold">clini.do</h1>
@@ -107,14 +147,19 @@ export function Login() {
                   autoCorrect="off"
                 />
               </div>
-              <Button onClick={() => {
-                toast({
-                  title: "Entre com o google!",
-                  description: "No momento só é possível entrar com o google.",
-                  duration: 5000,
-                  variant: "destructive",
-                });
-              }}>Entrar com o Email</Button>
+              <Button
+                onClick={() => {
+                  toast({
+                    title: "Entre com o google!",
+                    description:
+                      "No momento só é possível entrar com o google.",
+                    duration: 5000,
+                    variant: "destructive",
+                  });
+                }}
+              >
+                Entrar com o Email
+              </Button>
             </div>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -126,7 +171,11 @@ export function Login() {
                 </span>
               </div>
             </div>
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignIn}
+            >
               <img
                 src={googleLogo}
                 alt="Google Logo"

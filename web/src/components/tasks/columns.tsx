@@ -439,7 +439,7 @@ export const columns: ColumnDef<Task>[] = [
                       console.log("DATA: ", data.isBlocked);
                       if (data.isBlocked) {
                         fetch(
-                          `https://clinicorp-application-api.vercel.app/api/tasks/unblock${task.id}`,
+                          `https://clinicorp-application-api.vercel.app/api/tasks/unblock/${task.id}`,
                           {
                             method: "PUT",
                           }
