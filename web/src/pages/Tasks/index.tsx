@@ -10,15 +10,6 @@ import { Separator } from "@/components/ui/separator";
 
 import { LogOut, PlusCircle } from "lucide-react";
 
-import { Moon, Sun } from "lucide-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 import { Task, columns } from "@/components/tasks/columns";
 import { DataTable } from "@/components/tasks/data-table";
 import { Button } from "@/components/ui/button";
@@ -33,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -230,37 +222,7 @@ export function Tasks() {
         </div>
       </div>
       <div className="flex justify-end items-center p-5">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => {
-                const body = document.querySelector("body");
-                if (body) {
-                  body.classList.remove("dark");
-                }
-              }}
-            >
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                const body = document.querySelector("body");
-                if (body) {
-                  body.classList.add("dark");
-                }
-              }}
-            >
-              Dark
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ThemeToggle />
       </div>
       <div className="flex flex-col flex-1 p-6 space-y-11">
         <div className="flex flex-col leading-relaxed">
