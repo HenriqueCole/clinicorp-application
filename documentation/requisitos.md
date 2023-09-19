@@ -11,10 +11,12 @@
 9. Armazenamento de dados no Firestore: Os dados das tarefas e dos usuários são armazenados no Firestore.
 
 # Requisitos não funcionais:
-- Segurança 
-- Compatibilidade 
-- Desempenho
-- Escalabilidade 
-- Usabilidade
-- Estilo e layout
-- Manutenibilidade
+1. Segurança -> Sistema garante a segurança dos dados dos usuários.
+2. Compatibilidade -> Sistema compatível com os principais navegadores.
+3. Desempenho -> Sistema com um bom desempenho.
+4. Escalabilidade -> Sistema escalável para um grande número de usuários.
+5. Usabilidade -> Sistema fácil de usar.
+6. Estilo e layout -> Sistema com um estilo e layout agradáveis.
+7. Manutenibilidade -> Sistema fácil de manter.
+8. Confiabilidade -> Sistema é confiável.
+9. Disponibilidade -> Sistema disponível 24 horas por dia, 7 dias por semana.
