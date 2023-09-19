@@ -9,6 +9,7 @@
 7. Lista compartilhada: Todos os usuários têm acesso à mesma lista de tarefas.
 8. Utilização do Firebase: O Firebase é a plataforma de desenvolvimento utilizada.
 9. Armazenamento de dados no Firestore: Os dados das tarefas e dos usuários são armazenados no Firestore.
+10. O sistema deve conter testes.
 
 # Requisitos não funcionais:
 1. Segurança -> Sistema garante a segurança dos dados dos usuários.
