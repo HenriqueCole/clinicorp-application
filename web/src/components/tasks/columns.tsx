@@ -460,7 +460,7 @@ export const columns: ColumnDef<Task>[] = [
                           });
                       } else {
                         fetch(
-                          `https://clinicorp-application-api.vercel.app/api/tasks/block${task.id}`,
+                          `https://clinicorp-application-api.vercel.app/api/tasks/block/${task.id}`,
                           {
                             method: "PUT",
                           }
