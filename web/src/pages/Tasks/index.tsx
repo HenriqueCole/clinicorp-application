@@ -115,7 +115,7 @@ export function Tasks() {
   const priorities = [
     {
       id: "1",
-      name: "Baixa",
+      name: "Baixo",
       icon: <ArrowDown size={17} />,
     },
     {

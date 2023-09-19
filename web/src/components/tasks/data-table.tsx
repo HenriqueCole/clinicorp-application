@@ -78,7 +78,7 @@ export function DataTable<TData, TValue>({
   const priorityCheckboxes = [
     {
       id: '1',
-      name: 'Baixa',
+      name: 'Baixo',
     },
     {
       id: '2',

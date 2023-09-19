@@ -56,7 +56,7 @@ export type Task = {
   id: string;
   description: string;
   status: "To do" | "Doing" | "Done";
-  priority: "Baixa" | "Média" | "Alta";
+  priority: "Baixo" | "Média" | "Alta";
   responsible: string;
   createdBy: string;
   isBlocked: boolean;
@@ -151,7 +151,7 @@ export const columns: ColumnDef<Task>[] = [
       const priorities = [
         {
           id: "1",
-          name: "Baixa",
+          name: "Baixo",
           icon: <ArrowDown size={17} />,
         },
         {
