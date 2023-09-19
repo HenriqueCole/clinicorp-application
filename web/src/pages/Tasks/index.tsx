@@ -109,8 +109,13 @@ export function Tasks() {
           setUserName(user.displayName || "");
           setUserImg(user.photoURL || "");
         } else {
-          setUserName("");
-          setUserImg("");
+          toast({
+            title: "Você não está logado!",
+            description: "Você será redirecionado para a página de login.",
+            duration: 5000,
+            variant: "destructive"
+          });
+          navigate("/");
         }
       });
     }
