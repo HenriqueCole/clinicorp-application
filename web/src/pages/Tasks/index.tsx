@@ -177,18 +177,15 @@ export function Tasks() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="px-6 py-3 flex items-center justify-between border-b">
+      <div className="px-2 md:px-6 py-3 flex items-center justify-between border-b">
         <div className="flex items-center">
           <img src={clinicorpLogo} alt="Clinicorp" />
           <h1 className="text-xl font-bold">clini.do</h1>
         </div>
         <div className="flex items-center gap-3">
-          <h1 className="text-muted-foreground">Usuários no board</h1>
+          <h1 className="text-muted-foreground text-xs md:text-base">Usuários no board</h1>
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center">
-            {/* <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger> */}
             <Menubar className="border-none shadow-none cursor-pointer rounded-full">
               <MenubarMenu>
                 <MenubarTrigger className="rounded-full w-16 flex justify-center items-center">
@@ -215,10 +212,6 @@ export function Tasks() {
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
-            {/* </TooltipTrigger>
-                <TooltipContent>{userName}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
           </div>
         </div>
       </div>
