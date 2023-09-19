@@ -234,7 +234,7 @@ export function Tasks() {
         <div className="flex flex-col flex-1 space-y-4">
           <div className="flex flex-col flex-1">
             <AlertDialog>
-              <AlertDialogTrigger>
+              <AlertDialogTrigger className="w-fit">
                 <Button
                   variant="default"
                   className="flex items-center space-x-2"

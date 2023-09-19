@@ -92,8 +92,7 @@ export function DataTable<TData, TValue>({
  
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex items-center py-4">
-        <div className="flex items-center space-x-3">
+      <div className="grid items-center py-4 md:flex gap-2">
           <Input
             placeholder="Procurar tarefas..."
             value={(table.getColumn("description")?.getFilterValue() as string) ?? ""}
@@ -102,6 +101,10 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
+        <div className="
+          md:flex gap-3
+          grid
+        ">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="border-dashed flex gap-3">
@@ -201,7 +204,7 @@ export function DataTable<TData, TValue>({
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto flex gap-2">
+            <Button variant="outline" className="md:ml-auto flex gap-2">
               <Filter size={17} />
               Colunas
             </Button>
