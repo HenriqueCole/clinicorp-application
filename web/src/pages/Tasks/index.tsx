@@ -111,7 +111,7 @@ export function Tasks() {
         } else {
           toast({
             title: "Você não está logado!",
-            description: "Você será redirecionado para a página de login.",
+            description: "Você deve fazer login para acessar esta página.",
             duration: 5000,
             variant: "destructive"
           });
