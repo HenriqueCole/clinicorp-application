@@ -114,7 +114,7 @@ export function Tasks() {
             title: "Você não está logado!",
             description: "Você deve fazer login para acessar esta página.",
             duration: 5000,
-            variant: "destructive"
+            variant: "destructive",
           });
           navigate("/");
         }
@@ -178,7 +178,7 @@ export function Tasks() {
   };
 
   const { toast } = useToast();
-  
+
   const navigate = useNavigate();
 
   return (
@@ -189,7 +189,9 @@ export function Tasks() {
           <h1 className="text-xl font-bold">clini.do</h1>
         </div>
         <div className="flex items-center gap-3">
-          <h1 className="text-muted-foreground text-xs md:text-base">Usuários no board</h1>
+          <h1 className="text-muted-foreground text-xs md:text-base">
+            Usuários no board
+          </h1>
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center">
             <Menubar className="border-none shadow-none cursor-pointer rounded-full">
@@ -206,7 +208,8 @@ export function Tasks() {
                       auth.signOut();
                       toast({
                         title: "Logout realizado com sucesso!",
-                        description: "Você será redirecionado para a página de login.",
+                        description:
+                          "Você será redirecionado para a página de login.",
                         duration: 5000,
                       });
                       navigate("/");
@@ -227,7 +230,10 @@ export function Tasks() {
       <div className="flex flex-col flex-1 p-6 space-y-11">
         <div className="flex flex-col leading-relaxed">
           <h1 className="text-xl font-bold md:text-2xl">
-            👋 Bem vindo, {userName}!
+            <span className="animate-wave_hand_animation inline-block w-6 h-6 mr-2 animate-wave transform origin-70 text-xl">
+              👋
+            </span>
+            Bem vindo, {userName}!
           </h1>
           <span className="text-muted-foreground text-base">
             Aqui está a lista de tarefas
