@@ -283,7 +283,7 @@ export const columns: ColumnDef<Task>[] = [
             <AlertDialog>
               <AlertDialogTrigger
                 onClick={() => {
-                  if (task.isBlocked && loggedUserName !== task.createdBy) {
+                  if (task.isBlocked) {
                     toast({
                       title: `${task.createdBy} bloqueou esta tarefa!`,
                       description: "Você não pode editar uma tarefa bloqueada.",
